@@ -1,36 +1,55 @@
 package com.mytaxi.miguelgomez.kataloginlogout
 
-import android.content.Intent
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.support.v7.app.AppCompatActivity
+import android.view.View.GONE
+import android.view.View.VISIBLE
 import android.widget.Toast
 import kotlinx.android.synthetic.main.activity_main.*
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), LoginLogoutView {
+    override fun showError() {
+        Toast.makeText(this,"fuck",Toast.LENGTH_SHORT).show()
+    }
 
-    val loginUseCase:LoginUseCase = LoginUseCase()
+    val presenter: LoginLogoutPresenter = MainPresenter(this)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        button.setOnClickListener { v ->
-            if (loginUseCase.execute(
-                    edituser.text.toString(),
-                    editPassword.text.toString()
-                )
-            ) {
-                val intent = Intent(this, Main2Activity::class.java)
-                startActivity(intent)
 
-            } else {
-                Toast.makeText(this, "wrong bitch", Toast.LENGTH_SHORT).show()
-            }
+        button2.setOnClickListener { v ->
+            presenter.onLogoutClicked()
         }
+
+        button.setOnClickListener { v ->
+            presenter.onLoginClicked(
+                edituser.text.toString(),
+                editPassword.text.toString()
+            )
+        }
+    }
+
+    override fun hideLoginForm() {
+        button.visibility = GONE
+        editPassword.visibility = GONE
+        edituser.visibility = GONE
+    }
+
+    override fun hideLogoutForm() {
+        button2.visibility = GONE
+    }
+
+    override fun showLoginForm() {
+        button.visibility = VISIBLE
+        editPassword.visibility = VISIBLE
+        edituser.visibility = VISIBLE
+    }
+
+    override fun showLogoutForm() {
+        button2.visibility = VISIBLE
     }
 
 }
 
-class LoginUseCase
-{
-    fun  execute(user: String, psw: String): Boolean = (user == "admin" && psw == "admin")
-}
+
